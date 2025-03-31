@@ -12,8 +12,6 @@
 #include "atari/bus.h"
 #include "atari/machine.h"
 
-static u16 high_word; //HACK: We can probably do better here :)
-
 static void mmu_trace(const char *op, u32 dev_address,
 	const char *spacing, int size, u32 value,
 	size_t (*sh)(const struct device *device,
@@ -33,25 +31,14 @@ k	return;
 	if (strcmp(dev->name, "psg") == 0)
         goto trace;
 
+    /* Fake ram device: vec (MFP Vectors)
+     * TODO: Make it an actual device. */
     int addr = dev->bus.address + dev_address;
-    if ( addr == 0x110 || addr == 0x114 || addr == 0x120 || addr == 0x134) {
-        high_word = value;          //collect the high word write
-        //TODO: Support for 16-bit only writes to vector high word
-        printf("debug: %d u16 %s with value %d\n", addr, op, high_word);
-    }
-
-    if ( addr == 0x112 || addr == 0x116 || addr == 0x122 || addr == 0x136) {
-
-        char hack_op[100];
-        strcpy(hack_op, op);
+    if ( (int)addr >= 0x100 && (int)addr < 0x140) { /*MFP vector range */
 
         int dst_addr = dev->bus.address + dev_address;
-        if(high_word != 0) {
-            snprintf(hack_op+3, 4, "u32");
-            dst_addr -=2;
-        }
 
-        sprintf(description, "mfp vector ");
+        sprintf(description, "MFP Vector ");
         if (op[0] == 'r') {
             strncat(description, "read", 5);
         }
@@ -59,20 +46,18 @@ k	return;
             strncat(description, "write", 6);
         }
 
-        int hl = high_word << 16 | value;
-        high_word = 0;
 		printf("%s %8" PRIu64 "  %6x: %s %s%.*x %s\n",
 			"vec", machine_cycle(),
 			dst_addr,
-			hack_op, spacing, size, hl,
+			op, spacing, size, value,
             description);
+        return;
     }
-
-    return;
 
 	if (dev->bus.address + dev_address < 2048)
 		goto trace;
 
+    return;
 
 trace:
 
@@ -104,6 +89,11 @@ void mmu_trace_rd_u16(u32 dev_address, u32 value, const struct device *dev)
 	mmu_trace("rd u16", dev_address, "", 4, value, dev->id_u16, dev);
 }
 
+void mmu_trace_rd_u32(u32 dev_address, u32 value, const struct device *dev)
+{
+	mmu_trace("rd u32", dev_address, "", 4, value, dev->id_u32, dev);
+}
+
 void mmu_trace_wr_u8(u32 dev_address, u32 value, const struct device *dev)
 {
 	mmu_trace("wr  u8", dev_address, "  ", 2, value, dev->id_u8, dev);
@@ -113,3 +103,9 @@ void mmu_trace_wr_u16(u32 dev_address, u32 value, const struct device *dev)
 {
 	mmu_trace("wr u16", dev_address, "", 4, value, dev->id_u16, dev);
 }
+
+void mmu_trace_wr_u32(u32 dev_address, u32 value, const struct device *dev)
+{
+	mmu_trace("wr u32", dev_address, "", 4, value, dev->id_u32, dev);
+}
+
