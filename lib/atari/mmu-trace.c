@@ -31,9 +31,31 @@ k	return;
 	if (strcmp(dev->name, "psg") == 0)
         goto trace;
 
+    int addr = dev->bus.address + dev_address;
+    /* Fake ram device: vec_a (Auto Vectors) - temp hack for my boy Wietse
+     * TODO: Clean this all up */
+    if ( (int)addr >= 0x64  && (int)addr < 0x80) { /*MFP vector range */
+
+        int dst_addr = dev->bus.address + dev_address;
+
+        sprintf(description, "Auto Vector ");
+        if (op[0] == 'r') {
+            strncat(description, "read", 5);
+        }
+        else {
+            strncat(description, "write", 6);
+        }
+
+		printf("%s %8" PRIu64 "  %6x: %s %s%.*x %s\n",
+			"vec", machine_cycle(),
+			dst_addr,
+			op, spacing, size, value,
+            description);
+        return;
+    }
+
     /* Fake ram device: vec (MFP Vectors)
      * TODO: Make it an actual device. */
-    int addr = dev->bus.address + dev_address;
     if ( (int)addr >= 0x100 && (int)addr < 0x140) { /*MFP vector range */
 
         int dst_addr = dev->bus.address + dev_address;
