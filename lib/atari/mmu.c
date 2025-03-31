@@ -135,10 +135,22 @@ u32 m68k_read_memory_16(u32 bus_address)
 
 u32 m68k_read_memory_32(u32 bus_address)
 {
-	const u32 hi = m68k_read_memory_16(bus_address);
-	const u16 lo = m68k_read_memory_16(bus_address + 2);
+    const struct device *dev = device_for_bus_address(bus_address);
+	const u32 dev_address = bus_address - dev->bus.address;
 
-	return (hi << 16) | lo;
+	mmu_bus_wait(dev);
+
+	const u16 hi = dev->rd_u16(dev, dev_address);
+
+	mmu_bus_wait(dev);
+
+	const u16 lo = dev->rd_u16(dev, dev_address+2);
+
+	const u32 value = (hi << 16) | lo;
+
+	mmu_trace_rd_u32(dev_address, value, dev);
+
+    return value;
 }
 
 void m68k_write_memory_8(u32 bus_address, u32 value)
@@ -167,8 +179,19 @@ void m68k_write_memory_16(u32 bus_address, u32 value)
 
 void m68k_write_memory_32(u32 bus_address, u32 value)
 {
-	m68k_write_memory_16(bus_address, value >> 16);
-	m68k_write_memory_16(bus_address + 2, value & 0xffff);
+	const struct device *dev = device_for_bus_address(bus_address);
+	const u32 dev_address = bus_address - dev->bus.address;
+
+	mmu_bus_wait(dev);
+
+	dev->wr_u16(dev, dev_address, value >> 16);
+
+	mmu_bus_wait(dev);
+
+    /* Best effort: Trace cycle is at the second bus access (?) */
+	mmu_trace_wr_u32(dev_address, value, dev);
+
+	dev->wr_u16(dev, dev_address+2, value & 0xffff);
 }
 
 u32 m68k_read_disassembler_16(u32 bus_address)

@@ -42,13 +42,17 @@ struct device {
 
 	u8 (*rd_u8)(const struct device *device, u32 dev_address);
 	u16 (*rd_u16)(const struct device *device, u32 dev_address);
+	u32 (*rd_u32)(const struct device *device, u32 dev_address);
 
 	void (*wr_u8)(const struct device *device, u32 dev_address, u8 data);
 	void (*wr_u16)(const struct device *device, u32 dev_address, u16 data);
+	void (*wr_u32)(const struct device *device, u32 dev_address, u32 data);
 
 	size_t (*id_u8)(const struct device *device,
 		u32 dev_address, char *buf, size_t size);
 	size_t (*id_u16)(const struct device *device,
+		u32 dev_address, char *buf, size_t size);
+	size_t (*id_u32)(const struct device *device,
 		u32 dev_address, char *buf, size_t size);
 };
 
