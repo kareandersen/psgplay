@@ -11,7 +11,7 @@ clean()
 {
 	make clean
 
-	local CLEAN=$(git clean -n -fdx)
+	local CLEAN=$(git clean -n -fdX)
 	if [ -n "$CLEAN" ]
 	then
 		echo "$0: Unclean:" >&2
