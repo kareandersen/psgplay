@@ -346,9 +346,7 @@ static void insn_table(struct strbuf *sb, const char *s) {
 			parse = true;
 		} else if (!parse || line.sep) {
 			continue;
-		} else if (sscan(line.s, line.length,
-				&f.mnemonic, &f.pattern,
-				&f.ea, &f.op0, &f.op1, NULL)) {
+		} else if (parse_fields(line.s, &f)) {
 			insn_line(sb, &f);
 		}
 
