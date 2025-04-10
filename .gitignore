@@ -5,6 +5,7 @@
 *.o
 *.o.d
 *.dylib
+.brew_home/
 /GPATH
 /GRTAGS
 /GTAGS
