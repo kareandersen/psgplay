@@ -95,9 +95,9 @@ arch()
 		make_jv ALSA=1 psgplay
 		;;
 	mac-homebrew-gcc-portaudio)
-		HOMEBREW_GCC="$(which_homebrew_gcc)" || exit 1
-		echo "Using Homebrew GCC: $HOMEBREW_GCC ($("$HOMEBREW_GCC" --version | sed -n 1p))"
-		make -j"$JOBS" $V PORTAUDIO=1 CC="$HOMEBREW_GCC" LD="/usr/bin/clang"
+		local HOMEBREW_GCC="$(which_mac_homebrew_gcc)"
+		echo "$HOMEBREW_GCC $("$HOMEBREW_GCC" --version | sed -n 1p)"
+		make_jv PORTAUDIO=1 CC="$HOMEBREW_GCC" LD=/usr/bin/clang
 		;;
 	*)
 		echo "$compile: '$1' is not an arch." >&2
