@@ -14,7 +14,7 @@ clean()
 	local CLEAN=$(git clean -n -fdx)
 	if [ -n "$CLEAN" ]
 	then
-		echo "$0: Unclean:" >&2
+		echo "$compile: Unclean:" >&2
 		echo "$CLEAN" >&2
 		exit 1
 	fi
@@ -50,6 +50,11 @@ arch()
 		cc --version | sed -n 1p
 		make -j"$JOBS" $V psgplay example
 		;;
+	mac-homebrew-gcc-portaudio)
+		local HOMEBREW_GCC="$(which_homebrew_gcc)"
+		echo "$HOMEBREW_GCC $("$HOMEBREW_GCC" --version | sed -n 1p)"
+		make -j"$JOBS" $V PORTAUDIO=1 CC="$HOMEBREW_GCC" LD=/usr/bin/clang
+		;;
 	web)
 		emcc --version | sed -n 1p
 		make -j"$JOBS" $V HOST_CC=emcc web
@@ -81,7 +86,7 @@ arch()
 		make -j"$JOBS" $V PORTAUDIO=1 CC="$HOMEBREW_GCC" LD="/usr/bin/clang"
 		;;
 	*)
-		echo "$0: '$1' is not an arch." >&2
+		echo "$compile: '$1' is not an arch." >&2
 		exit 1
 	esac
 
@@ -95,6 +100,6 @@ arch)
 	arch "$@"
 	;;
 *)
-	echo "$0: '$1' is not a command." >&2
+	echo "$compile: '$1' is not a command." >&2
 	exit 1
 esac
