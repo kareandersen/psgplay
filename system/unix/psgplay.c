@@ -133,6 +133,9 @@ int main(int argc, char *argv[])
 	if (options->disassemble)
 		disassemble_exit(options, file);
 
+	if (options->trace_config)
+		load_trace_regions_from_ini(options->trace_config);
+
 	if (options->trace.m)
 		trace_exit(options, file);
 

@@ -14,6 +14,7 @@ ATARI_SRC := $(addprefix lib/atari/,					\
 	mixer.c								\
 	mmu.c								\
 	mmu-trace.c							\
+	trace-config.c						\
 	psg.c								\
 	ram.c								\
 	rom.c								\

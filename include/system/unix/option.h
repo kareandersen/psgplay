@@ -9,6 +9,7 @@
 #include <stdbool.h>
 
 #include "atari/trace.h"
+#include "atari/trace-config.h"
 #include "psgplay/stereo.h"
 
 #define OPTION_TIME_UNDEFINED -1
@@ -46,6 +47,9 @@ struct options {
 	enum disassemble_type disassemble;
 	bool disassemble_address;
 	bool remake_header;
+
+	const char *trace_config;
+
 };
 
 int option_verbosity(void);

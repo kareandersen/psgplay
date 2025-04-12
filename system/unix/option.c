@@ -85,6 +85,8 @@ static void help(FILE *file)
 "Tracing options:\n"
 "\n"
 "    --trace=<device>,...   trace device operations of SNDH file and exit:\n"
+"    --trace-config=<file>  load trace region tags from INI file\n"
+
 #define TRACE_DEVICE_HELP(symbol_, label_, id_) " " #symbol_
 "                          " TRACE_DEVICE(TRACE_DEVICE_HELP) "\n"
 "\n",
@@ -259,6 +261,7 @@ struct options *parse_options(int argc, char **argv)
 		{ "remake-header",       no_argument,       NULL, 0 },
 
 		{ "trace",               required_argument, NULL, 0 },
+		{ "trace-config", 		 required_argument, NULL, 0 },
 
 		{ NULL, 0, NULL, 0 }
 	};
@@ -327,6 +330,8 @@ struct options *parse_options(int argc, char **argv)
 				option.disassemble_address = true;
 			else if (OPT("remake-header"))
 				option.remake_header = true;
+			else if (OPT("trace-config"))
+				option.trace_config = optarg;
 			break;
 
 		case 'h':
