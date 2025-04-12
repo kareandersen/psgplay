@@ -29,7 +29,7 @@ void m68k_instruction_callback(int pc)
 	if (!instruction_callback.cb)
 		return;
 
-	instruction_callback.cb(ADDRESS_68K(REG_PPC), instruction_callback.arg);
+	instruction_callback.cb(pc, instruction_callback.arg);
 }
 
 void cpu_instruction_callback(void (*cb)(uint32_t pc, void *arg), void *arg)
