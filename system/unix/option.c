@@ -113,7 +113,7 @@ static void NORETURN version_exit(void)
 static bool file_output(void)
 {
 #ifdef HAVE_ALSA
-	if (alsa_output_handle(option.output))
+	if (alsa_writer_handle(option.output))
 		return false;
 #endif /* HAVE_ALSA */
 
